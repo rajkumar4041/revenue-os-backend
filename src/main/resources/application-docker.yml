@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/revenueos
+    username: revenueos
+    password: revenueos
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:4173
