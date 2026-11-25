@@ -23,3 +23,7 @@ app:
     password-reset-ttl: PT30M
   cors:
     allowed-origins: http://localhost:5173
+  mail:
+    enabled: false
+    from: no-reply@revenueos.test
+    base-url: http://localhost:5173

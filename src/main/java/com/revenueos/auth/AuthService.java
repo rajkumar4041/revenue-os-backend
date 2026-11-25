@@ -11,6 +11,7 @@ import com.revenueos.auth.token.PasswordResetToken;
 import com.revenueos.auth.token.PasswordResetTokenRepository;
 import com.revenueos.auth.token.RefreshTokenService;
 import com.revenueos.common.Tokens;
+import com.revenueos.common.email.EmailService;
 import com.revenueos.config.AppProperties;
 import com.revenueos.user.User;
 import com.revenueos.user.UserRepository;
@@ -36,7 +37,10 @@ public class AuthService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthTokenFactory authTokenFactory;
+    private final EmailService emailService;
     private final java.time.Duration resetTtl;
+    private final boolean mailEnabled;
+    private final String baseUrl;
 
     public AuthService(AuthenticationManager authenticationManager,
                        UserRepository userRepository,
@@ -44,6 +48,7 @@ public class AuthService {
                        PasswordResetTokenRepository passwordResetTokenRepository,
                        PasswordEncoder passwordEncoder,
                        AuthTokenFactory authTokenFactory,
+                       EmailService emailService,
                        AppProperties properties) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
@@ -51,7 +56,10 @@ public class AuthService {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.authTokenFactory = authTokenFactory;
+        this.emailService = emailService;
         this.resetTtl = properties.security().passwordResetTtl();
+        this.mailEnabled = properties.mail() != null && properties.mail().enabled();
+        this.baseUrl = properties.mail() != null ? properties.mail().baseUrl() : "";
     }
 
     @Transactional
@@ -86,8 +94,13 @@ public class AuthService {
                     token.setTokenHash(Tokens.sha256(raw));
                     token.setExpiresAt(Instant.now().plus(resetTtl));
                     passwordResetTokenRepository.save(token);
-                    // No mail service yet: the raw token is returned so the reset flow is usable in dev.
-                    return new ForgotPasswordResponse(RESET_MESSAGE, raw);
+
+                    String resetLink = baseUrl + "/reset-password?token=" + raw;
+                    emailService.sendPasswordReset(user.getEmail(), resetLink);
+
+                    // When email is actually sent we don't leak the token in the response;
+                    // without SMTP (local dev) we return it so the flow stays usable.
+                    return new ForgotPasswordResponse(RESET_MESSAGE, mailEnabled ? null : raw);
                 })
                 .orElse(new ForgotPasswordResponse(RESET_MESSAGE, null));
     }
