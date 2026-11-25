@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * app is immediately explorable. Login: admin@demo.io / Password123!
  */
 @Component
-@Profile({"dev", "docker"})
+@Profile({"dev", "docker", "demo"})
 public class DemoDataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DemoDataInitializer.class);
