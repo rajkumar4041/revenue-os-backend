@@ -29,8 +29,8 @@ public class Employee extends TenantAwareEntity {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "department_id")
-    private UUID departmentId;
+    @Column(name = "team_id")
+    private UUID teamId;
 
     private String designation;
 

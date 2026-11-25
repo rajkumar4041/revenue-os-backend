@@ -17,7 +17,7 @@ public record UpdateEmployeeRequest(
         @Email(message = "Email must be valid")
         String email,
 
-        UUID departmentId,
+        UUID teamId,
         String designation,
         EmploymentType employmentType,
         EmploymentStatus employmentStatus,

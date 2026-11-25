@@ -17,7 +17,7 @@ public record OnboardEmployeeRequest(
         String email,
 
         UUID userId,
-        UUID departmentId,
+        UUID teamId,
         String designation,
         EmploymentType employmentType,
         BigDecimal costRate,

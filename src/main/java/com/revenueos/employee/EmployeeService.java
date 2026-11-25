@@ -29,9 +29,9 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<EmployeeResponse> list(EmploymentStatus status, UUID departmentId, Pageable pageable) {
+    public PageResponse<EmployeeResponse> list(EmploymentStatus status, UUID teamId, Pageable pageable) {
         return PageResponse.of(
-                employeeRepository.search(TenantContext.getOrganizationId(), status, departmentId, pageable),
+                employeeRepository.search(TenantContext.getOrganizationId(), status, teamId, pageable),
                 employeeMapper::toResponse);
     }
 
@@ -48,7 +48,7 @@ public class EmployeeService {
         employee.setFullName(request.fullName());
         employee.setEmail(request.email());
         employee.setUserId(request.userId());
-        employee.setDepartmentId(request.departmentId());
+        employee.setTeamId(request.teamId());
         employee.setDesignation(request.designation());
         if (request.employmentType() != null) {
             employee.setEmploymentType(request.employmentType());
@@ -67,7 +67,7 @@ public class EmployeeService {
         Employee employee = requireEmployee(id);
         employee.setFullName(request.fullName());
         employee.setEmail(request.email());
-        employee.setDepartmentId(request.departmentId());
+        employee.setTeamId(request.teamId());
         employee.setDesignation(request.designation());
         if (request.employmentType() != null) {
             employee.setEmploymentType(request.employmentType());
