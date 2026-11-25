@@ -1,0 +1,43 @@
+Permission,Category,COMPANY_ADMIN,MANAGER,SALES,ACCOUNT_MANAGER,FINANCE,EMPLOYEE
+CLIENT_VIEW,Clients,Yes,Yes,Yes,Yes,,
+CLIENT_CREATE,Clients,Yes,,Yes,,,
+CLIENT_UPDATE,Clients,Yes,,Yes,Yes,,
+CLIENT_DELETE,Clients,Yes,,,,,
+PROJECT_VIEW,Projects,Yes,Yes,,,,
+PROJECT_CREATE,Projects,Yes,Yes,,,,
+PROJECT_UPDATE,Projects,Yes,Yes,,,,
+PROJECT_DELETE,Projects,Yes,,,,,
+TASK_VIEW,Tasks,Yes,Yes,,,,Yes
+TASK_CREATE,Tasks,Yes,Yes,,,,
+TASK_UPDATE,Tasks,Yes,Yes,,,,Yes
+TASK_ASSIGN,Tasks,Yes,Yes,,,,
+TIMESHEET_SUBMIT,Timesheets,Yes,,,,,Yes
+TIMESHEET_APPROVE,Timesheets,Yes,Yes,,,,
+REVENUE_VIEW,Revenue,Yes,,,Yes,Yes,
+REVENUE_MANAGE,Revenue,Yes,,,,Yes,
+INVOICE_VIEW,Invoicing,Yes,,,Yes,Yes,
+INVOICE_CREATE,Invoicing,Yes,,,Yes,Yes,
+EMPLOYEE_VIEW,Employees,Yes,Yes,,,,
+EMPLOYEE_MANAGE,Employees,Yes,,,,,
+REPORT_VIEW,Reports,Yes,Yes,Yes,,Yes,
+USER_MANAGE,Administration,Yes,,,,,
+ROLE_MANAGE,Administration,Yes,,,,,
+ORGANIZATION_MANAGE,Administration,Yes,,,,,
+,,,,,,,
+Screen,Required permission,COMPANY_ADMIN,MANAGER,SALES,ACCOUNT_MANAGER,FINANCE,EMPLOYEE
+Dashboard,(none),Yes,Yes,Yes,Yes,Yes,Yes
+Dashboard - revenue cards & chart,REVENUE_VIEW,Yes,,,Yes,Yes,
+Activity,REPORT_VIEW,Yes,Yes,Yes,,Yes,
+Leads,CLIENT_VIEW,Yes,Yes,Yes,Yes,,
+Pipeline,CLIENT_VIEW,Yes,Yes,Yes,Yes,,
+Clients,CLIENT_VIEW,Yes,Yes,Yes,Yes,,
+Projects,PROJECT_VIEW,Yes,Yes,,,,
+Tasks,TASK_VIEW,Yes,Yes,,,,Yes
+Timesheets,TIMESHEET_SUBMIT,Yes,,,,,Yes
+Approvals,TIMESHEET_APPROVE or REVENUE_MANAGE,Yes,Yes,,,Yes,
+Invoices,INVOICE_VIEW,Yes,,,Yes,Yes,
+Expenses,REVENUE_VIEW,Yes,,,Yes,Yes,
+Employees,EMPLOYEE_VIEW,Yes,Yes,,,,
+Departments,EMPLOYEE_VIEW,Yes,Yes,,,,
+Users,USER_MANAGE,Yes,,,,,
+Roles,ROLE_MANAGE,Yes,,,,,
