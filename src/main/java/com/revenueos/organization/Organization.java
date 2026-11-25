@@ -10,6 +10,8 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "organizations", uniqueConstraints = @UniqueConstraint(name = "uk_organizations_slug", columnNames = "slug"))
 @Getter
@@ -29,4 +31,8 @@ public class Organization extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "subscription_plan", nullable = false)
     private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREE;
+
+    /** When the free trial ends (set to 20 days out at registration). */
+    @Column(name = "trial_ends_at")
+    private LocalDate trialEndsAt;
 }
