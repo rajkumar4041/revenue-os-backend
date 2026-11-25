@@ -1,5 +1,6 @@
 package com.revenueos.user;
 
+import com.revenueos.common.email.EmailService;
 import com.revenueos.common.exception.ConflictException;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
@@ -25,13 +26,15 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final EmailService emailService;
 
     public UserService(UserRepository userRepository, RoleRepository roleRepository,
-                       PasswordEncoder passwordEncoder, UserMapper userMapper) {
+                       PasswordEncoder passwordEncoder, UserMapper userMapper, EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.emailService = emailService;
     }
 
     @Transactional(readOnly = true)
@@ -58,7 +61,9 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setStatus(UserStatus.ACTIVE);
         user.setRoles(resolveRoles(request.roleIds()));
-        return userMapper.toResponse(userRepository.save(user));
+        User saved = userRepository.save(user);
+        emailService.sendWelcome(saved.getEmail(), saved.getName());
+        return userMapper.toResponse(saved);
     }
 
     @Transactional
