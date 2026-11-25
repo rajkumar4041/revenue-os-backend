@@ -4,6 +4,7 @@ import com.revenueos.client.Client;
 import com.revenueos.client.ClientRepository;
 import com.revenueos.client.ClientStatus;
 import com.revenueos.client.ClientType;
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.sales.dto.OpportunityRequest;
 import com.revenueos.sales.dto.OpportunityResponse;
@@ -20,12 +21,14 @@ public class OpportunityService {
     private final OpportunityRepository opportunityRepository;
     private final ClientRepository clientRepository;
     private final SalesMapper salesMapper;
+    private final AuditService auditService;
 
     public OpportunityService(OpportunityRepository opportunityRepository, ClientRepository clientRepository,
-                              SalesMapper salesMapper) {
+                              SalesMapper salesMapper, AuditService auditService) {
         this.opportunityRepository = opportunityRepository;
         this.clientRepository = clientRepository;
         this.salesMapper = salesMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -77,7 +80,9 @@ public class OpportunityService {
             Client saved = clientRepository.save(client);
             opportunity.setClientId(saved.getId());
         }
-        return salesMapper.toResponse(opportunityRepository.save(opportunity));
+        Opportunity won = opportunityRepository.save(opportunity);
+        auditService.record("OPPORTUNITY_WON", "Opportunity", won.getId(), "Won deal " + won.getName());
+        return salesMapper.toResponse(won);
     }
 
     private Opportunity requireOpportunity(UUID id) {

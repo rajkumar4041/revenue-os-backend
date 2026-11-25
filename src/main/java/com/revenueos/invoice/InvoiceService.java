@@ -1,5 +1,6 @@
 package com.revenueos.invoice;
 
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ApiException;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
@@ -29,15 +30,17 @@ public class InvoiceService {
     private final PaymentRepository paymentRepository;
     private final InvoiceItemMapper invoiceItemMapper;
     private final PaymentMapper paymentMapper;
+    private final AuditService auditService;
 
     public InvoiceService(InvoiceRepository invoiceRepository, InvoiceItemRepository invoiceItemRepository,
                           PaymentRepository paymentRepository, InvoiceItemMapper invoiceItemMapper,
-                          PaymentMapper paymentMapper) {
+                          PaymentMapper paymentMapper, AuditService auditService) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceItemRepository = invoiceItemRepository;
         this.paymentRepository = paymentRepository;
         this.invoiceItemMapper = invoiceItemMapper;
         this.paymentMapper = paymentMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -98,7 +101,9 @@ public class InvoiceService {
             throw new ApiException(HttpStatus.CONFLICT, "Only draft invoices can be sent");
         }
         invoice.setStatus(InvoiceStatus.SENT);
-        return toDetail(invoiceRepository.save(invoice));
+        Invoice saved = invoiceRepository.save(invoice);
+        auditService.record("INVOICE_SENT", "Invoice", saved.getId(), "Sent invoice " + saved.getInvoiceNumber());
+        return toDetail(saved);
     }
 
     @Transactional
@@ -131,7 +136,10 @@ public class InvoiceService {
 
         BigDecimal paid = paymentRepository.sumForInvoice(invoice.getId());
         invoice.setStatus(paid.compareTo(invoice.getTotal()) >= 0 ? InvoiceStatus.PAID : InvoiceStatus.PARTIALLY_PAID);
-        return toDetail(invoiceRepository.save(invoice));
+        Invoice saved = invoiceRepository.save(invoice);
+        auditService.record("PAYMENT_RECORDED", "Invoice", saved.getId(),
+                "Recorded payment of " + request.amount() + " on " + saved.getInvoiceNumber());
+        return toDetail(saved);
     }
 
     // --- helpers ---
