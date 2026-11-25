@@ -17,10 +17,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
             select e from Employee e
             where e.organizationId = :organizationId
               and (:status is null or e.employmentStatus = :status)
-              and (:departmentId is null or e.departmentId = :departmentId)
+              and (:teamId is null or e.teamId = :teamId)
             """)
     Page<Employee> search(@Param("organizationId") UUID organizationId,
                          @Param("status") EmploymentStatus status,
-                         @Param("departmentId") UUID departmentId,
+                         @Param("teamId") UUID teamId,
                          Pageable pageable);
 }

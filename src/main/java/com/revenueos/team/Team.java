@@ -1,4 +1,4 @@
-package com.revenueos.department;
+package com.revenueos.team;
 
 import com.revenueos.common.TenantAwareEntity;
 import jakarta.persistence.Column;
@@ -11,14 +11,15 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "departments", uniqueConstraints = @UniqueConstraint(name = "uk_departments_org_name", columnNames = {"organization_id", "name"}))
+@Table(name = "teams", uniqueConstraints = @UniqueConstraint(name = "uk_teams_org_name", columnNames = {"organization_id", "name"}))
 @Getter
 @Setter
-public class Department extends TenantAwareEntity {
+public class Team extends TenantAwareEntity {
 
     @Column(nullable = false)
     private String name;
 
+    /** The single manager responsible for this team. */
     @Column(name = "manager_user_id")
     private UUID managerUserId;
 }
