@@ -4,14 +4,14 @@ Spring Boot backend for RevenueOS, a multi-tenant revenue and operations managem
 
 ## 🚀 Live demo
 
-App: **https://revenue-os.vercel.app** &nbsp;·&nbsp; API: **https://revenue-os-backend.onrender.com**
+> **Not deployed yet.** After deploying, add your own links here, e.g.
+> App `https://<your-app>.vercel.app` · API `https://<your-backend>.onrender.com`.
+> (Don't use `revenue-os.vercel.app` / `revenue-os-backend.onrender.com` — those
+> are placeholders that may belong to unrelated apps.)
 
-Sign in with the demo account **`admin@demo.io` / `Password123!`**. API docs
-(Swagger UI) live at `/swagger-ui.html`.
-
-> Replace the URLs above with your deployed links. See [`DEPLOYMENT.md`](DEPLOYMENT.md)
-> for the free Vercel + Render + Neon setup. The free backend may cold-start
-> (~30–60 s) on the first request after idle.
+Once live, sign in with **`admin@demo.io` / `Password123!`**. API docs (Swagger UI)
+are at `/swagger-ui.html`. See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the free
+Vercel + Render + Neon setup.
 
 ## Stack
 
