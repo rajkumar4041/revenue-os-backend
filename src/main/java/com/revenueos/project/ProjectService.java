@@ -1,5 +1,6 @@
 package com.revenueos.project;
 
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ConflictException;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
@@ -19,10 +20,12 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+    private final AuditService auditService;
 
-    public ProjectService(ProjectRepository projectRepository, ProjectMapper projectMapper) {
+    public ProjectService(ProjectRepository projectRepository, ProjectMapper projectMapper, AuditService auditService) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -50,7 +53,9 @@ public class ProjectService {
                 request.startDate(), request.endDate(), request.estimatedBudget(), request.contractValue(),
                 request.billingType(), request.hourlyRate(), request.status(), request.priority(),
                 request.memberUserIds());
-        return projectMapper.toResponse(projectRepository.save(project));
+        Project saved = projectRepository.save(project);
+        auditService.record("PROJECT_CREATED", "Project", saved.getId(), "Created project " + saved.getName());
+        return projectMapper.toResponse(saved);
     }
 
     @Transactional

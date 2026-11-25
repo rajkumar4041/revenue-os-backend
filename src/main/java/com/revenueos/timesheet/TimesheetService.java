@@ -1,5 +1,6 @@
 package com.revenueos.timesheet;
 
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ApiException;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.timesheet.dto.AddTimeEntryRequest;
@@ -25,12 +26,14 @@ public class TimesheetService {
     private final TimesheetRepository timesheetRepository;
     private final TimeEntryRepository timeEntryRepository;
     private final TimeEntryMapper timeEntryMapper;
+    private final AuditService auditService;
 
     public TimesheetService(TimesheetRepository timesheetRepository, TimeEntryRepository timeEntryRepository,
-                            TimeEntryMapper timeEntryMapper) {
+                            TimeEntryMapper timeEntryMapper, AuditService auditService) {
         this.timesheetRepository = timesheetRepository;
         this.timeEntryRepository = timeEntryRepository;
         this.timeEntryMapper = timeEntryMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -117,7 +120,10 @@ public class TimesheetService {
         timesheet.setStatus(TimesheetStatus.APPROVED);
         timesheet.setApprovedByUserId(TenantContext.getUserId());
         timesheet.setApprovedAt(Instant.now());
-        return toDetail(timesheetRepository.save(timesheet));
+        Timesheet saved = timesheetRepository.save(timesheet);
+        auditService.record("TIMESHEET_APPROVED", "Timesheet", saved.getId(),
+                "Approved timesheet for week of " + saved.getPeriodStart());
+        return toDetail(saved);
     }
 
     @Transactional
@@ -126,7 +132,10 @@ public class TimesheetService {
         requireStatus(timesheet, TimesheetStatus.SUBMITTED);
         timesheet.setStatus(TimesheetStatus.REJECTED);
         timesheet.setReviewNote(note);
-        return toDetail(timesheetRepository.save(timesheet));
+        Timesheet saved = timesheetRepository.save(timesheet);
+        auditService.record("TIMESHEET_REJECTED", "Timesheet", saved.getId(),
+                "Rejected timesheet for week of " + saved.getPeriodStart());
+        return toDetail(saved);
     }
 
     // --- helpers ---

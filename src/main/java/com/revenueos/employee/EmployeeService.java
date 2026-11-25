@@ -1,5 +1,6 @@
 package com.revenueos.employee;
 
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
 import com.revenueos.employee.dto.EmployeeResponse;
@@ -19,10 +20,12 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
+    private final AuditService auditService;
 
-    public EmployeeService(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
+    public EmployeeService(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper, AuditService auditService) {
         this.employeeRepository = employeeRepository;
         this.employeeMapper = employeeMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +57,9 @@ public class EmployeeService {
         employee.setCostRate(request.costRate());
         employee.setBillableRate(request.billableRate());
         employee.setHireDate(request.hireDate());
-        return employeeMapper.toResponse(employeeRepository.save(employee));
+        Employee saved = employeeRepository.save(employee);
+        auditService.record("EMPLOYEE_ONBOARDED", "Employee", saved.getId(), "Onboarded " + saved.getFullName());
+        return employeeMapper.toResponse(saved);
     }
 
     @Transactional
@@ -82,7 +87,9 @@ public class EmployeeService {
         Employee employee = requireEmployee(id);
         employee.setEmploymentStatus(EmploymentStatus.OFFBOARDED);
         employee.setEndDate(request.endDate() != null ? request.endDate() : LocalDate.now());
-        return employeeMapper.toResponse(employeeRepository.save(employee));
+        Employee saved = employeeRepository.save(employee);
+        auditService.record("EMPLOYEE_OFFBOARDED", "Employee", saved.getId(), "Offboarded " + saved.getFullName());
+        return employeeMapper.toResponse(saved);
     }
 
     private Employee requireEmployee(UUID id) {

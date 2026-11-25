@@ -1,5 +1,6 @@
 package com.revenueos.sales;
 
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ApiException;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
@@ -20,11 +21,14 @@ public class LeadService {
     private final LeadRepository leadRepository;
     private final OpportunityRepository opportunityRepository;
     private final SalesMapper salesMapper;
+    private final AuditService auditService;
 
-    public LeadService(LeadRepository leadRepository, OpportunityRepository opportunityRepository, SalesMapper salesMapper) {
+    public LeadService(LeadRepository leadRepository, OpportunityRepository opportunityRepository,
+                       SalesMapper salesMapper, AuditService auditService) {
         this.leadRepository = leadRepository;
         this.opportunityRepository = opportunityRepository;
         this.salesMapper = salesMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +81,7 @@ public class LeadService {
 
         lead.setStatus(LeadStatus.CONVERTED);
         leadRepository.save(lead);
+        auditService.record("LEAD_CONVERTED", "Lead", lead.getId(), "Converted lead " + lead.getName());
         return salesMapper.toResponse(saved);
     }
 

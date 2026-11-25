@@ -3,6 +3,7 @@ package com.revenueos.client;
 import com.revenueos.client.dto.ClientResponse;
 import com.revenueos.client.dto.CreateClientRequest;
 import com.revenueos.client.dto.UpdateClientRequest;
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
 import com.revenueos.tenant.TenantContext;
@@ -17,10 +18,12 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final AuditService auditService;
 
-    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
+    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper, AuditService auditService) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -60,7 +63,9 @@ public class ClientService {
         client.setContractValue(request.contractValue());
         client.setPaymentTerms(request.paymentTerms());
         client.setNotes(request.notes());
-        return clientMapper.toResponse(clientRepository.save(client));
+        Client saved = clientRepository.save(client);
+        auditService.record("CLIENT_CREATED", "Client", saved.getId(), "Added client " + saved.getName());
+        return clientMapper.toResponse(saved);
     }
 
     @Transactional

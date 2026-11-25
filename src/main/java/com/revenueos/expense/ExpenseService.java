@@ -1,5 +1,6 @@
 package com.revenueos.expense;
 
+import com.revenueos.audit.AuditService;
 import com.revenueos.common.exception.ResourceNotFoundException;
 import com.revenueos.common.web.PageResponse;
 import com.revenueos.expense.dto.CreateExpenseRequest;
@@ -17,10 +18,12 @@ public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
     private final ExpenseMapper expenseMapper;
+    private final AuditService auditService;
 
-    public ExpenseService(ExpenseRepository expenseRepository, ExpenseMapper expenseMapper) {
+    public ExpenseService(ExpenseRepository expenseRepository, ExpenseMapper expenseMapper, AuditService auditService) {
         this.expenseRepository = expenseRepository;
         this.expenseMapper = expenseMapper;
+        this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +66,10 @@ public class ExpenseService {
     public ExpenseResponse setStatus(UUID id, ExpenseStatus status) {
         Expense expense = requireExpense(id);
         expense.setStatus(status);
-        return expenseMapper.toResponse(expenseRepository.save(expense));
+        Expense saved = expenseRepository.save(expense);
+        auditService.record("EXPENSE_" + status.name(), "Expense", saved.getId(),
+                status.name().toLowerCase() + " expense of " + saved.getAmount());
+        return expenseMapper.toResponse(saved);
     }
 
     @Transactional
