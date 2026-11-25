@@ -13,6 +13,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
 
     Optional<Expense> findByIdAndOrganizationId(UUID id, UUID organizationId);
 
+    java.util.List<Expense> findByOrganizationIdAndStatus(UUID organizationId, ExpenseStatus status);
+
     @Query("""
             select e from Expense e
             where e.organizationId = :organizationId
