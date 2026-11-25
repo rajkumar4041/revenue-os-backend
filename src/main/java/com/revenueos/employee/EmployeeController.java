@@ -39,12 +39,12 @@ public class EmployeeController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('EMPLOYEE_VIEW')")
-    @Operation(operationId = "listEmployees", summary = "List employees, optionally filtered by status and department")
+    @Operation(operationId = "listEmployees", summary = "List employees, optionally filtered by status and team")
     public PageResponse<EmployeeResponse> list(
             @RequestParam(required = false) EmploymentStatus status,
-            @RequestParam(required = false) UUID departmentId,
+            @RequestParam(required = false) UUID teamId,
             @ParameterObject @PageableDefault(size = 20, sort = "fullName") Pageable pageable) {
-        return employeeService.list(status, departmentId, pageable);
+        return employeeService.list(status, teamId, pageable);
     }
 
     @GetMapping("/{id}")

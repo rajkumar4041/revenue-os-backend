@@ -12,7 +12,7 @@ public record EmployeeResponse(
         String fullName,
         String email,
         UUID userId,
-        UUID departmentId,
+        UUID teamId,
         String designation,
         EmploymentType employmentType,
         EmploymentStatus employmentStatus,
