@@ -15,6 +15,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, UUID> {
 
     long countByOrganizationId(UUID organizationId);
 
+    java.util.List<Invoice> findByOrganizationId(UUID organizationId);
+
     @Query("""
             select i from Invoice i
             where i.organizationId = :organizationId
