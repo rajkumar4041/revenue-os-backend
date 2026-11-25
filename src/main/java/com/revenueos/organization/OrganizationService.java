@@ -61,6 +61,7 @@ public class OrganizationService {
         organization.setSlug(uniqueSlug(request.companyName()));
         organization.setStatus(OrganizationStatus.ACTIVE);
         organization.setSubscriptionPlan(SubscriptionPlan.FREE);
+        organization.setTrialEndsAt(java.time.LocalDate.now().plusDays(20));
         organization = organizationRepository.save(organization);
 
         Role adminRole = roleService.provisionDefaults(organization.getId());
