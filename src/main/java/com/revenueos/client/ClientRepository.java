@@ -13,11 +13,14 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
 
     Optional<Client> findByIdAndOrganizationId(UUID id, UUID organizationId);
 
+    // An empty search term matches everything (like '%%'); callers pass "" rather
+    // than null so Postgres can always infer the parameter type inside concat().
     @Query("""
             select c from Client c
             where c.organizationId = :organizationId
-              and (:search is null or lower(c.name) like lower(concat('%', :search, '%'))
-                   or lower(c.companyName) like lower(concat('%', :search, '%')))
+              and (lower(c.name) like lower(concat('%', :search, '%'))
+                   or (c.companyName is not null
+                       and lower(c.companyName) like lower(concat('%', :search, '%'))))
             """)
     Page<Client> search(@Param("organizationId") UUID organizationId,
                         @Param("search") String search,
