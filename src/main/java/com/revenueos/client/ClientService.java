@@ -28,7 +28,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public PageResponse<ClientResponse> list(String search, Pageable pageable) {
-        String term = (search == null || search.isBlank()) ? null : search.trim();
+        String term = (search == null || search.isBlank()) ? "" : search.trim();
         return PageResponse.of(
                 clientRepository.search(TenantContext.getOrganizationId(), term, pageable),
                 clientMapper::toResponse);
